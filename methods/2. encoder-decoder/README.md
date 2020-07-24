@@ -9,25 +9,25 @@ Encoder-Decoder 延伸自 `recurrent continuous translation models (RCTM I, RCTM
 
 ## Method
 
-在大部份 NMT 模型中，要得到 target sentence (y) 通常是用 source sentence (x) 來計算 ![](http://latex.codecogs.com/svg.latex?P(y\\mid x)) 的機率
+在大部份 NMT 模型中，要得到 target sentence (y) 通常是用 source sentence (x) 來計算 <img src="https://latex.codecogs.com/png.latex?P(y\mid%20x)"/> 的機率
 
-![](http://latex.codecogs.com/svg.latex?P(y\mid x) \stackrel{\text{Chain rule}}{=} \prod_{j=1}^J P(y_j\mid y_1^{j-1}, x))
+<img src="https://latex.codecogs.com/png.latex?P(y\mid%20x)\stackrel{\text{Chain%20rule}}{=}\prod_{j=1}^J%20P(y_j\mid%20y_1^{j-1},x)"/>
 
-不同的 encoder-decoder 對 ![](http://latex.codecogs.com/svg.latex?P(y_j\mid y_1^{j-1}, x)) 做不同處理，例如
+不同的 encoder-decoder 對 <img src="https://latex.codecogs.com/png.latex?P(y_j\mid%20y_1^{j-1},x)"/> 做不同處理，例如
 
-![](http://latex.codecogs.com/svg.latex?P(y_j\mid y_1^{j-1},x)=g(y_j\mid s_j, y_{j-1}, c(x)))
+<img src="https://latex.codecogs.com/png.latex?P(y_j\mid%20y_1^{j-1},x)=g(y_j\mid%20s_j,y_{j-1},c(x))"/>
 
-* ![](http://latex.codecogs.com/svg.latex?g(\cdot)) 是一個 feed-forward network 最後一層為 softmax
-* ![](http://latex.codecogs.com/svg.latex?g(\cdot)) 的 input 是
-  * ![](http://latex.codecogs.com/svg.latex?c(x)) 代表 source sentence 的 vector
-  * ![](http://latex.codecogs.com/svg.latex?s_j) 代表 decoder 的 hidden state
-  * ![](http://latex.codecogs.com/svg.latex?y_{j-1}) 代表已產生的前 j-1 個 tokens
+* <img src="https://latex.codecogs.com/png.latex?g(\cdot)"/> 是一個 feed-forward network 最後一層為 softmax
+* <img src="https://latex.codecogs.com/png.latex?g(\cdot)"/> 的 input 分別是
+  * <img src="https://latex.codecogs.com/png.latex?c(x)"/> 代表 source sentence 的 vector
+  * <img src="https://latex.codecogs.com/png.latex?s_j"/> 代表 decoder 的 hidden state
+  * <img src="https://latex.codecogs.com/png.latex?y_{j-1}"/> 代表已產生的前 j-1 個 tokens
 
-Source sentence (![](http://latex.codecogs.com/svg.latex?c(x))) 有兩種用法: 
+Source sentence (<img src="https://latex.codecogs.com/png.latex?c(x)"/>) 有兩種用法: 
 
 ![](../../assets/source_sentence_usage.png)
 
-1. 只用來初始化第一個 decoder state ![](http://latex.codecogs.com/svg.latex?s_1)
+1. 只用來初始化第一個 decoder state <img src="https://latex.codecogs.com/png.latex?s_1"/>
 2. 用在 decoder 的每一個時間點
 
 ## Models

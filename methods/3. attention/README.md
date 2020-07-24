@@ -1,2 +1,1 @@
-
-![](http://latex.codecogs.com/svg.latex?)
+<img src="https://latex.codecogs.com/png.latex?"/>

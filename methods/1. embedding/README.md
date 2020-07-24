@@ -3,9 +3,9 @@
 將 word 表達成 continuous vectors 是 NLP 的精隨之一
 
 * Key Idea
-  * 將一個存在字典 (![](http://latex.codecogs.com/svg.latex?\sum)) 的單字 (`x`) 表達成 `d` 維度的向量
-    * `d` 通常遠小於 ![](http://latex.codecogs.com/svg.latex?\sum)
-  * 儲存形式為 embedding matrix ![](http://latex.codecogs.com/svg.latex?E \in \mathbb{R}^{d\times\lvert\sum\rvert})
+  * 將一個存在字典 (<img src="https://latex.codecogs.com/png.latex?\sum"/>) 的單字 (`x`) 表達成 `d` 維度的向量
+    * `d` 通常遠小於 <img src="https://latex.codecogs.com/png.latex?\sum"/>
+  * 儲存形式為 embedding matrix <img src="https://latex.codecogs.com/png.latex?E\in\mathbb{R}^{d\times\lvert\sum\rvert}"/>
     * `E` 的第 `x` column 代表 word `x` 的 `d` 維向量
 
 透過 embedding 可以抓到文字之間的相似度 (morphological, syntactic, semantic)
@@ -32,11 +32,11 @@
 
 在情感分析或是機器翻譯 (MT) 特別需要將整個片語或句子變成 embedding
 
-* source phrase `x` 就可以作為 target phrase `y` 的條件 ![](http://latex.codecogs.com/svg.latex?P(y\mid x))
+* source phrase `x` 就可以作為 target phrase `y` 的條件 <img src="https://latex.codecogs.com/png.latex?P(y\mid%20x)"/>
 * 做法是使用 `recurrent autoencoder`
   * `Recursive distributed representations`
   * `Semi-supervised recursive Autoencoders for predicting sentiment distributions`
-    1. 首先先訓練出一般的 embedding ![](http://latex.codecogs.com/svg.latex?E \in \mathbb{R}^{d\times\lvert \sum \rvert})
+    1. 首先先訓練出一般的 embedding <img src="https://latex.codecogs.com/png.latex?E\in\mathbb{R}^{d\times\lvert\sum\rvert}"/>
     2. 接著從 `E` 重複提取 2 維的向量到 autoencoder network
     3. 然後從 autoencoder 得到 1 維的向量
     4. 重複 2-3 得到整個片語的 embedding
