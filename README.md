@@ -1,63 +1,12 @@
 # TODO
 
 - [ ] Learning Training skills
-  - [ ] Convolutional Neural Machine Translation (ConvS2S)
-  - [ ] Neural Machine Translation Decoding
-    - [ ] Greedy & Beam Search
-    - [ ] Generating Diverse Translations
-    - [ ] Simultaneous Translation
-  - [ ] Dataset
-    - [ ] Large Output Vocabularies
-    - [ ] Parallel Corpus
-    - [ ] Character-based NMT
-    - [ ] Subword-unit-based NMT (radical, ideograph, stroke)
-    - [ ] Monolingual Corpus
-    - [ ] Back-translation
-  - [ ] Training
-    - [ ] Large Batch Learning
-    - [ ] Reinforcement Learning
-    - [ ] Dual Supervised Learning
-    - [ ] Adversarial Learning
-  - [ ] Interpretability
-    - [ ] Post-hoc
-    - [ ] Model-intrinsic
-    - [ ] Confidence Estimation
-    - [ ] Word Alignment
-  - [ ] Data Sparsity
-    - [ ] Corpus Filtering
-    - [ ] Domain Adaptation
-    - [ ] Low-resource
-    - [ ] Unsupervised
-  - [ ] Multilingual NMT
-  - [ ] Extended Method
-    - [ ] Multimodal
-    - [ ] Tree-based
-    - [ ] Graph structured input
-    - [ ] document-level
 - [ ] Implement a new tf transformer translation system
 - [ ] Evaluate the performance of the system
-  - [ ] BLEU
 - [ ] Update the system with some skills and features
 - [ ] Think of a new approach
 - [ ] Evaluation
 - [ ] Identify the problem, find a solution, or leave a vision
-
-# BPE
-
-# Seq2Seq
-
-https://easyai.tech/ai-definition/encoder-decoder-seq2seq
-
-* 只要是輸入序列、輸出序列就是 seq2seq
-* seq2seq 算是 Encoder-Decoder 的一種
-* 簡單的 attention 介紹
-
-
-https://blog.csdn.net/u014595019/article/details/52826423
-
-* Encoder-Decoder 的不足
-* Attention 的補足
-* 但解碼看不太懂
 
 # Attention, Self-attention, Multi-head attention, Transformer
 
@@ -110,8 +59,7 @@ https://zhuanlan.zhihu.com/p/47613793
 * Image Transformer
   * 用 attention 圖像合成，還原解析度
 
-
-
+# DeepL
 
 https://techcrunch.com/2017/08/29/deepl-schools-other-online-translators-with-clever-machine-learning/
 
