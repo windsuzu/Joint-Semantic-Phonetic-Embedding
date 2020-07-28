@@ -8,62 +8,12 @@
 - [ ] Evaluation
 - [ ] Identify the problem, find a solution, or leave a vision
 
-# Attention, Self-attention, Multi-head attention, Transformer
-
-https://zhuanlan.zhihu.com/p/47063917
-
-* RNN 和 Attention 的結合
-
-
-https://zhuanlan.zhihu.com/p/47282410
-
-* Self-attention 捨棄 RNN 只留 attention
-  * 每個字和其他字的關係產生 attention score
-  * 在 encoder 會層層疊加 self-attention
-  * 在 decoder 不僅看前一個輸出字，也會看 encoder 的
-  * self-attention 由 QKV 組成算出 Z (https://www.zhihu.com/question/325839123)
-    * Query = 自己
-    * Key = 所有字
-    * Value = 該 key 的價值 (通常 k=v)
-    * WQ, WK, WV 就是要訓練的參數
-* Multi-head attention 只是很多個 self-attention 結合而已
-  * 也就是可以有多組 QKV
-  * 每個 self-attention 關注的點可能不同
-  * 最後還是會組成一個 Z
-* Mask multi-head attention
-  * 放在第一層，輸入來自前一層的 decoder
-  * Mask 讓我們只能 attend 翻譯過的 encoder
-  * 在預測第 t 個詞的時候要把 t+1 到末尾的詞遮住，只對前面 t 個詞做 self-attention
-* Encoder-Decoder attention layer
-  * Q 來自前一個 decoder 輸出
-  * KV 來自 encoder 輸出
-  * 讓每個位置的 decoder 都能對到 input 的每個位置
-* Position encoding
-  * 因為沒有 CNN 或 RNN 無法知道字的位置
-  * 所以加一個 encoding 在 embedding 上，知道字的位置
-* Add & Norm
-  * Residual connection
-  * Layer normalization
-
-
-https://zhuanlan.zhihu.com/p/47613793
-
-* Universal Transformers
-  * 加入 transition function 來循環 attention
-* BERT
-  * 雙向 transformer
-* Generating Wikipedia by Summarizing Long Sequences
-  * 讀很多文章，自動生出 wiki 風格的內容
-* Show, Attend and Tell
-  * 影像處理 (caption) 才是 attention 最早使用的地方
-* Image Transformer
-  * 用 attention 圖像合成，還原解析度
 
 # DeepL
 
 https://techcrunch.com/2017/08/29/deepl-schools-other-online-translators-with-clever-machine-learning/
 
-指出 deepL 已經很好，但在中日翻譯還是有問題
+DeepL 已經很好，但在中日翻譯還是有問題
 
 # Motivation (我可以做什麼別人沒做過的，別人沒用的方法)
 
@@ -116,28 +66,37 @@ https://paperswithcode.com/search?q_meta=&q=translation+evaluation
 
 # Other j-c implementation
 
-7.
-parallel corpus filtering
-back translation
-
-6.
-data processing
-Large-scale back-translation on monolingual corpus
-exclusive word embedding
-different granularity of tokens like sub-word level
-
-5.
-additional linguistic features in character-level NMT
-radicals of Chinese characters (or kanji)
-
-4.
+1. Chinese–Japanese Unsupervised Neural Machine Translation Using Sub-character Level Information
 Unsupervised neural machine translation
+
 logographic language pairs
 Sub-character Level Information (ideograph or stroke)
 
 sub-character-level > character-level
 stroke > ideograph
 
+---
+
+2. Improving Character-level Japanese-Chinese Neural Machine Translation with Radicals as an Additional Input Feature
+
+additional linguistic features in character-level NMT
+radicals of Chinese characters (or kanji)
+
+---
+
+3. LIT Team’s System Description for Japanese-Chinese Machine
+
+data processing
+Large-scale back-translation on monolingual corpus
+exclusive word embedding
+different granularity of tokens like sub-word level
+
+---
+
+4. Octanove Labs’ Japanese-Chinese Open Domain Translation System
+
+parallel corpus filtering
+back translation
 
 # Measurement, Contribution
 
@@ -145,7 +104,6 @@ BLEU => transformer-only implementation
 => try to break it
 
 Blind testing through questionnaire
-
 
 # Progress
 

@@ -6,6 +6,7 @@ Encoder-Decoder 延伸自 `recurrent continuous translation models (RCTM I, RCTM
 
 * Encoder 負責計算 source sentence 的向量
 * Decoder 負責從 encoder 的資訊來產生 target sentence
+* Encoder 要給 decoder 的資訊為固定長度 (fixed length sentence encodings)
 
 ## Method
 
@@ -57,7 +58,7 @@ LSTM, GRU 通常會被使用來避免 vanishing gradient problem
 
 整個算法會在 decoder 產生 end-of-sentence 的符號時 `</s>` 停止
 
-## 補充
+# 補充
 
 https://easyai.tech/ai-definition/encoder-decoder-seq2seq
 
