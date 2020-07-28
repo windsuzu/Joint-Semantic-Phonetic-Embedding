@@ -3,9 +3,9 @@
 單純的 encoder-decoder model 在產生長句子的翻譯時效果很爛，原因來自 `fixed-length source sentence encoding`
 
 * 固定長度的 source encoding 不能給 decoder 足夠資訊來翻譯
-* 一開始有人把句子差成多個子句，翻譯後再合併，但效果不好
+* 一開始有人把句子拆成多個子句，翻譯後再合併，但效果不好
   * `Overcoming the curse of sentence length for neural machine translation using automatic segmentation`
-* 另一個想法是 attention 不再使用固定長度的 encoding (<img src="https://latex.codecogs.com/png.latex?c(x)"/>)
+* 另一個想法是 attention 不再使用固定長度的 encoding <img src="https://latex.codecogs.com/png.latex?c(x)"/>
   * Attentional decoder 可以只看需要的 encoder 資訊來翻譯
   * <img src="https://latex.codecogs.com/png.latex?c(x)"/> 變成一系列的 <img src="https://latex.codecogs.com/png.latex?c_j(x)"/> 其中 j 代表時間點
 
@@ -29,7 +29,7 @@ Attention 的概念就像:
 
 * `score(Q, K)` 是一個 similarity score matrix (n, m)
 * 會使用 softmax 將每個 column 都一般化，代表每個 `query vector` 的權重加總為一
-* `score()` 有最常使用的計算方式是 dot product
+* `score()` 最常使用的計算方式是 dot product
 
 ## Method
 
@@ -43,11 +43,13 @@ Attention 的概念就像:
 * <img src="https://latex.codecogs.com/png.latex?K=V=h_i"/> 為 `key, value vectors`
   * <img src="https://latex.codecogs.com/png.latex?m=I"/> 為 source sentence length
 
-Attention layer 產出來的 output 為 `time-dependent context vectors` (<img src="https://latex.codecogs.com/png.latex?c_j(x)"/>)
+Attention layer 產出來的 output 為 `time-dependent context vectors` <img src="https://latex.codecogs.com/png.latex?c_j(x)"/>
 
 * 每個時間點 j 我們會 query 原句子一次
-* 然後最終能得出一個 `attention matrix` (<img src="https://latex.codecogs.com/png.latex?A\in\mathbb{R}^{J\times%20I}"/>)
+* 然後最終能得出一個 `attention matrix` <img src="https://latex.codecogs.com/png.latex?A\in\mathbb{R}^{J\times%20I}"/>
 * 從 A 可以看出翻譯句子和原句子之間的關係
+
+以下是一個 H=3 的 multi-head model:
 
 ![](../../assets/attention_matrix.png)
 
@@ -55,7 +57,7 @@ Attention layer 產出來的 output 為 `time-dependent context vectors` (<img s
 
 > * Attention is all you need
 
-Multi-head attention 是由 `H` (通常為 8) 個 attention 組合而成
+Multi-head attention 是由 `H` (通常為 8) 個 attention head 組合而成
 
 * 一個 attention head 的 `query, key, value vectors` 都是 Q, K, V 的 linear transforms
 * Multi-head attention 的輸出就是這 H 個 attention heads 的 concatenation
@@ -89,18 +91,86 @@ Multi-head attention 雖然效能較好，但無法像 attention 輕鬆產出 at
 
 # Recurrent Neural Machine Translation
 
+RNNsearch 是第一個使用 attention 的 NMT model，預測 <img src="https://latex.codecogs.com/png.latex?P(y\mid%20x)"/> 中的 <img src="https://latex.codecogs.com/png.latex?c(x)"/> 改變成 <img src="https://latex.codecogs.com/png.latex?c_j(x)"/>:
+
+<img src="https://latex.codecogs.com/png.latex?P(y\mid%20x)=P(y_j\mid%20y_1^{j-1},x)=g(y_j\mid%20s_j,y_{j-1},c_j(x))"/>
+
+為了預測 <img src="https://latex.codecogs.com/png.latex?y_j"/> 的分布，使用了以下的資訊:
+
+* 前一次產生的 token <img src="https://latex.codecogs.com/png.latex?y_{j-1}"/>
+* RNN decoder state <img src="https://latex.codecogs.com/png.latex?s_j\in\mathbb{R}^n"/>
+* Context vector <img src="https://latex.codecogs.com/png.latex?c_j(x)\in\mathbb{R}^m"/>
+  * 代表 target token 在 source sentence 關注 (attention) 某一部分的 distributed representation
+  * 解決了 encoder-decoder 只使用一個 context vector 的缺點
+
+![](../../assets/rnnsearch_model.png)
+
+## Context Vector
+
+Context vector <img src="https://latex.codecogs.com/png.latex?c_j(x)"/> 是 source sentence 的 multi-head <img src="https://latex.codecogs.com/png.latex?\mathbf{h}=(h_1,\cdots,h_I)"/> 的加總 
+
+也就是 encoder 將 input sequence `x` 轉換成一系列長度相等的 `h`，而 <img src="https://latex.codecogs.com/png.latex?h_i\in\mathbb{R}^m"/> 代表了 `x` 的資訊並且是以第 `i` 個字為重點表示
+
+RNNsearch 是使用 bidirectional RNN 來產生 annotation (`h`)，`f(.)` 通常是 LSTM 或 GRU
+
+<img src="https://latex.codecogs.com/png.latex?\begin{aligned}h_i&=\left[\overrightarrow{h_i};\,\overleftarrow{h_i}\right]\\\overrightarrow{h_i}&=\overrightarrow{f}(x_i,\overrightarrow{h_{i-1}})\\\overleftarrow{h_i}&=\overleftarrow{f}(x_i, \overleftarrow{h_{i+1}})\end{aligned}"/>
+
+Context vector <img src="https://latex.codecogs.com/png.latex?c_j(x)"/> 就是 `h` (annotations as weighted sum) 和 weights <img src="https://latex.codecogs.com/png.latex?\alpha_j\in\left[0,1\right]^I"/> 的相乘:
+
+<img src="https://latex.codecogs.com/png.latex?c_j(x)=\sum_{i=1}^I\alpha_{j,i}h_i"/>
+
+每個 weights <img src="https://latex.codecogs.com/png.latex?\alpha"/> 由 alignment model `a(.)` 計算出來
+
+<img src="https://latex.codecogs.com/png.latex?\alpha_{j,i}=\frac{1}{Z}\exp(a(s_{j-1},h_i))\text{%20with%20}Z=\sum_{k=1}^I\exp(a(s_{j-1},h_k))"/>
+
+其中的 <img src="https://latex.codecogs.com/png.latex?a(s_{j-1},h_i)"/> 是一個 feedforward neural network
+
+* 在給定當下 decoder state <img src="https://latex.codecogs.com/png.latex?s_{j-1}\in\mathbb{R}^n"/> 情況下
+* 估計 annotation <img src="https://latex.codecogs.com/png.latex?h_i"/> 對第 `j` 個 target token 的重要性有多大
+
+用 Pure Attention 的術語來表示的話:
+
+* <img src="https://latex.codecogs.com/png.latex?h_i"/> 代表 keys, values
+* <img src="https://latex.codecogs.com/png.latex?s_j"/> 代表 queries
+* `a(.)` 代表 attention scoring function
+
+## g Function
+
+<img src="https://latex.codecogs.com/png.latex?P(y\mid%20x)=P(y_j\mid%20y_1^{j-1},x)=g(y_j\mid%20s_j,y_{j-1},c_j(x))"/>
+
+現在可以回到最前面了解 g function 做的事情:
+
+* 吃了前一個 target token <img src="https://latex.codecogs.com/png.latex?y_{j-1}"/>
+* 吃了 context vector <img src="https://latex.codecogs.com/png.latex?c_j"/>
+* 吃了 decoder hidden state <img src="https://latex.codecogs.com/png.latex?s_j"/>
+  * <img src="https://latex.codecogs.com/png.latex?s_j=f(s_{j-1},y_{j-1},c_j)"/>
+  * 其中 `f(.)` 可以是 GRU, LSTM cell model
+
+整個 g 可以表達成下列式子:
+
+<img src="https://latex.codecogs.com/png.latex?\begin{aligned}&g(y_j\mid%20y_{j-1},s_j,c_j)\propto\exp(W_o\max(t_j,u_j))\\t_j&=T_ss_j+T_yEy_{j-1}+T_cc_j\\u_j&=U_ss_j+U_yEy_{j-1}+U_cc_j\end{aligned}"/>
+
+其中的大 `T, U, W, E` 都是 weight matrices
+
+![](../../assets/rnnsearch_attention_model.png)
+
+`g(.)` 的定義可以看作是將 `output of the recurrent layer` 和 `previous target token` (k-dimensional embedding) 還有 `context vector`，用一個 size l 的 maxout layer 連接起來
+
+# Convolutional Neural Machine Translation
+
+CNN 非常適合用於影像處理任務上，原因有二:
+
+1. High degree of `weight tying` 減少參數量
+2. Automatically learn space `invariant features` 找出影像中的物件
+
+CNN 一樣可以用於 NLP 的一維資料，但我們會省略 pooling, strides (不常用於一維資料)
 
 
+input u1...uI 個 M-dimensional vectors (i 代表空間維度 i-axis,  M 代表 channels)
 
-
-
-
-
-
-
-
-
-
+convolution 將 input 轉換成 N-dimensional vectors
+做法是用長度為 K 的 kernel 跑過 input 一遍
+kernel 將 k-gram ui, ... ui+k-1 轉成 vi
 
 
 
