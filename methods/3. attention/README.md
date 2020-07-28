@@ -165,14 +165,88 @@ CNN 非常適合用於影像處理任務上，原因有二:
 
 CNN 一樣可以用於 NLP 的一維資料，但我們會省略 pooling, strides (不常用於一維資料)
 
+## Concept
 
-input u1...uI 個 M-dimensional vectors (i 代表空間維度 i-axis,  M 代表 channels)
+我們會將一連串的 M-dimensional vectors <img src="https://latex.codecogs.com/png.latex?u_1,\cdots,u_I\in\mathbb{R}^M"/> 丟進一個 `1D convolutional layer`
 
-convolution 將 input 轉換成 N-dimensional vectors
-做法是用長度為 K 的 kernel 跑過 input 一遍
-kernel 將 k-gram ui, ... ui+k-1 轉成 vi
+* 通常 M 解釋為 channels
+* i-axis 代表空間維度 (spatial dimension)
 
+Convolution 會將 input sequence <img src="https://latex.codecogs.com/png.latex?u_1,\cdots,u_I"/> 轉換輸出成 N-dimensional vectors <img src="https://latex.codecogs.com/png.latex?v_1,\cdots,v_I"/>
 
+做法是使用長度為 `K` 的 kernel 跑過 input 一遍，將 `K-gram` <img src="https://latex.codecogs.com/png.latex?u_i,\cdots,u_{i+K-1}"/> 映射成 <img src="https://latex.codecogs.com/png.latex?v_i\text{%20for%20}i\in\left[1,I\right]"/>
+
+## Convolution Types
+
+Standard convolution 會將轉換參數化成 full weight matrix `W`
+
+![](../../assets/convolution_types.png)
+
+Standard convolution 可以表達成兩種 dependencies: `spatial dependency` 和 `cross-channel dependency`
+
+* `Pointwise convolution` 抽取 `cross-channel dependency` 自成一體
+* `Depthwise convolution` 抽取 `spatial dependency` 自成一體
+
+另外還有一個 `depthwise separable convolution`，先做完 `depthwise convolution` 再做 `spatial pointwise`，減少參數量
+
+| Name                            | Number of parameters |
+| ------------------------------- | -------------------- |
+| Standard convolution            | KMN                  |
+| Pointwise convolution           | MN                   |
+| Depthwise convolution           | KN                   |
+| Depthwise separable convolution | N(M+K)               |
+
+> * 完整的 convolution types 教學
+> * https://medium.com/@chih.sheng.huang821/%E6%B7%B1%E5%BA%A6%E5%AD%B8%E7%BF%92-mobilenet-depthwise-separable-convolution-f1ed016b3467
+
+## CNN NMT
+
+CNN 的 NMT 模型有兩個好處:
+
+1. 減少序列的計算，而且更容易在 GPU 上平行化
+2. 在架構中可以用更短的 path 來連接距離較遠單字的關聯
+
+![](../../assets/cnn_nmt_compare2attention.png)
+
+上圖就是 fully convolutional NMT (左，ConvS2S) 對比 purely attention-based NMT (右)，越多層的 convolutional layers 可以增加讀取 context 的能力
+
+* ConvS2S 在 decoder 必須要對 `receptive field` 添加 `mask`，防止網路預先讀取未來的資訊
+  * `Pixel recurrent neural networks`
+* 可以將 attention 加入網路中連接 encoder 和 decoder，每個 decoder layer 中都使用 attention 來改變 encoder representation 
+  * `Convolutional sequence to sequence learning`
+
+# Self-attention-based Neural Machine Translation
+
+yj 依賴 yj-1_1 和 x
+
+x 可表達成 c(x) 和 c_j(x)
+
+yj-1_1 可以用 rnn 和 cnn 表達，也可以用 self-attention 表達
+
+decoder self-attention 會自己從 decoder state 產生 q,k,v
+透過關注自己前面的 time steps 來處理 yj-1_1
+
+self-attention 一樣擁有 cnn 的兩個優點
+
+short-path 能訓練出 strong semantic feature extractor，但對 long-range subject-verb agreement 效果不佳
+
+self-attention 一樣在 decoder state 要防止讀到未來資訊
+
+第一個使用 self-attention 的模型是 transformer，將 self-attention 用在三個地方，依賴整個 source sentence 來抓出 context-sensitive word representation
+
+1. encoder 
+2. encoder-decoder
+3. decoder
+
+Transformer 使用了 multi-head attention
+
+===
+
+self-attention 沒辦法偵測到文字的順序
+
+要使用 positional encoding
+
+# Comparison of the Fundamental Architectures
 
 
 
