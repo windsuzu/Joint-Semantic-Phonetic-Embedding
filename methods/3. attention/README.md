@@ -217,41 +217,88 @@ CNN 的 NMT 模型有兩個好處:
 
 # Self-attention-based Neural Machine Translation
 
-yj 依賴 yj-1_1 和 x
+NMT 將 <img src="https://latex.codecogs.com/png.latex?P(y\mid%20x)"/> 化為 <img src="https://latex.codecogs.com/png.latex?P(y_j\mid%20y_1^{j-1},x)"/>
 
-x 可表達成 c(x) 和 c_j(x)
+我們學到 `x` 可以用兩種方式表達
 
-yj-1_1 可以用 rnn 和 cnn 表達，也可以用 self-attention 表達
+* <img src="https://latex.codecogs.com/png.latex?c(x)"/> (fixed length encoding)
+* <img src="https://latex.codecogs.com/png.latex?c_j(x)"/> (time dependent attention)
 
-decoder self-attention 會自己從 decoder state 產生 q,k,v
-透過關注自己前面的 time steps 來處理 yj-1_1
+也學到兩種方式表達 target sentence prefix <img src="https://latex.codecogs.com/png.latex?y_1^{j-1}"/>
 
-self-attention 一樣擁有 cnn 的兩個優點
+* 一種是 RNN
+* 一種是 CNN
+* 其實還有一種叫做 self-attention
 
-short-path 能訓練出 strong semantic feature extractor，但對 long-range subject-verb agreement 效果不佳
+在 self-attention 中 decoder 會自己從 decoder state 產生出 Q, K, V (queries, keys, values)，透過關注自己前面的 time steps 來處理 <img src="https://latex.codecogs.com/png.latex?y_1^{j-1}"/>
 
-self-attention 一樣在 decoder state 要防止讀到未來資訊
+Self-attention 一樣擁有 CNN 的兩個優點
 
-第一個使用 self-attention 的模型是 transformer，將 self-attention 用在三個地方，依賴整個 source sentence 來抓出 context-sensitive word representation
+* Short paths between distant words
+  * Useful for learning strong semantic feature extractor
+  * **But less so** for modelling long-range **subject-verb agreement**
+* Reduce the amount of sequential computation 
 
-1. encoder 
-2. encoder-decoder
-3. decoder
+Self-attention 一樣需要防止讀到未來資訊，所以添加 mask 在未來的 decoder state
 
-Transformer 使用了 multi-head attention
+第一個使用 self-attention 的模型是 transformer，他將 self-attention 用在三個地方:
 
-===
+1. 在 encoder 建立出能表示整個句子但擁有 context-sensitive 的 word representations  
+2. 連接 encoder-decoder 
+3. 在 decoder 藉著翻譯歷史 (prefix token) 來預測下個字
 
-self-attention 沒辦法偵測到文字的順序
+另外 transformer 使用了 multi-head attention
 
-要使用 positional encoding
+## Challenge for transformer
+
+Self-attention 無法像 RNN 偵測到文字的順序
+
+* Key-value pairs 是根據 query 和 key 的對應關係 (content-based) 存取
+* 並不是依賴文字位置 (location-based) 存取
+
+一個方法是使用 `positional encodings` (Attention is all you need)
+
+* 利用 PE function 建立一個 D-dimensional 的向量來代表位置
+* 然後加入到 input, output 使其能夠 position-sensitive 
 
 # Comparison of the Fundamental Architectures
 
+NMT 大致上可以分成三種類型:
 
+1. RNN
+2. CNN
+3. self-attention
 
+在實作上可以分成下面四種主流，在圖中省略了 dropout, batch normalization, layer normalization 等細節
 
-<img src="https://latex.codecogs.com/png.latex?"/>
+1. 使用 RNN 的 Google's Neural Machine Translation system (GNMT)
+   * `Google’s neural machine translation system: Bridging the gap between human and machine translation`
+2. 使用 CNN 的 ConvS2S
+   * `Convolutional sequence to sequence learning`
+3. 使用 self-attention 的 Transformer
+   * `Attention is all you need`
+4. RNMT + Model
+   * `The best of both worlds: Combining recent advances in neural machine translation`
+
+每一個模型都是使用 encoder-decoder 的概念，以 linear projection layer 和 softmax 產生機率模型來輸出
+
+* 都有使用 attention 在 decoder layer 連接 encoder (些微差異)
+* 都有使用 residual connections 解決 gradient 問題
+* Positional encodings 用於 ConvS2S 和 Transformer 但沒有用在 GNMT
+* 第四個 (RNMT + Model) 將 multi-head attention 的概念加入到 RNN 的模型中
+
+![](../../assets/nmt_model_comparison.png)
+
+其他還有很多模型:
+
+* Convolutional encoder + Recurrent decoder
+  * `A convolutional encoder model for neural machine translation`
+* Self-attention connections to a recurrent decoder
+  * `Self-attentive residual decoder for neural machine translation`
+* Transformer encoder + Recurrent encoder in parallel
+  * `Modeling recurrence for Transformer`
+* Recurrent decoder + Convolutional decoder (global target-side context)
+  * `Deconvolution-based global decoding for neural machine translation`
 
 # 補充
 
