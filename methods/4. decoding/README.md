@@ -43,5 +43,52 @@ Beam search 就是為了緩解 greedy search 的問題而出現的，每次會�
 
 儘管 beam search 看起來已經解決了 greedy search 的缺點，但事實上依然存在 `garden-path problem` (`On NMT search errors and model errors: Cat got your tongue?`)
 
+## Formal Description of Decoding for the RNNsearch Model
+
+解釋 OneStepRNNsearch P(y|x) 用於 greedy & beam search 
+
+## Ensembling
+
+ensembling 用 K 個 nmt model 並使用 arith, geo 來合併結果
+
+Sarith, Sgeo 可以取代 equ.5
+
+Sarith 合理，但 Sgeo 較快，因為 log 在合併不用轉換
+
+最先進的 NMT 都使用 ensembling，例如 tencent 72 model
+
+Ensembling 缺點：
+
+1. worse speed
+2. difficult to imple
+
+在 13. model size 中有講到 `knowledge distillation` 可以用於減緩 ensembling 缺點
+
+通常在 ensembling 的所有 model 都是使用相同 size, training data，只有改變 random weight initialization 和 randomized order of training samples
+
+每個 ensembling model 會犯不同的錯，但又可以被其他 model 省略掉 (156)
+這很合理因為 NMT 的翻譯品質在不同訓練會差距很大 (157)
+
+NMT loss surface 往往是 highly non-convex 無法到達 local optima
+而 ensembling 可以緩解這個問題，甚至能達到 regularization (158)
+
+### Checkpoint Averaging
+
+checkpoint averaging 常被和 ensembling 一起討論
+
+checkpoint averaging 會追蹤訓練時的 checkpoint 將 weight matrices 平均作為最終矩陣，不增加 decoding 時間，在 NMT 常被使用 (76, 126, 161)
+
+和 ensembling 處理不同的問題，主要是修正 training curve 的 minor fluctuation
+造成原因是
+
+1. optimizer's update rule
+2. mini-batch training 下 gradient estimation 的 noise
+
+因為個別獨立的 model 相差很大，Checkpoint averaing 無法用在 independently trained models
+
+## Decoding Direction
+
+
+
 
 <img src="https://latex.codecogs.com/png.latex?"/>
