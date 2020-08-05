@@ -60,15 +60,76 @@
 > * Both softmax sampling and UNK replace have been used in one of the winning systems at the WMT’15 evaluation on English-German.
 > * `Montreal neural machine translation systems for WMT’15`
 
+## Word-based NMT problem
+
+不管 translation-specific 還是 model-specific 再怎麼改進，word-based NMT 本身就有缺點:
+
+1. translation-specific 利用 `<UNK>` 取代生詞，但大量生詞得到相同分數
+2. model-specific 無法對稀有的生詞建立出一個很好的 embedding
+
+透過 word-based 且大量 vocabulary 訓練的 NMT 無法輕易的增加新詞彙的認知，但是在商業等級的 MT 系統又必須要客製化在特定 domain 當中，並且一些生詞是不需要被翻譯的
+
 # Character-based NMT
 
+一些新方法將單字拆成更小的單位 (finer-grained units)，然後用這些單位直接訓練模型翻譯
 
+第一個實現的論文為 `Character-based neural machine translation`
 
+1. 核心的 NMT network 還是保留在 word-level
+2. 用 subnetworks 來取代輸入輸出的 embedding layer
+   * 這些 subnetworks 從文字中的 character 來計算文字的 word representation
+   * 這些 subnetworks 可以是 recurrent, convolutional, hybrid
 
+實作的論文有:
+
+* recurrent
+  * `Neural machine translation with characters and hierarchical encoding`
+* convolutional
+  * `Character-aware neural language models`
+* hybrid
+  * `Achieving open vocabulary neural machine translation with hybrid word-character models`
+
+Character-based model 依然有 `segmentation dependent` 的問題存在
+
+1. Input text 必須使用 tokenizer 進行預處理
+2. 在語義豐富的語言中需要看情況使用 `compound or morpheme splitting`
+3. 或者排除標點符號 (punctuation symbols)
+
+由於 tokenization 非常容易出錯並降低整體表現，所以很多人嘗試打造不需要 `prior segmentation` 的 character-level system
+
+1. Bi-scale recurrent neural network 取代 segmentation
+   * `A character-level decoder without explicit segmentation for neu- ral machine translation`
+2. Convolution 移除 segmentation
+   * `Fully character-level neural machine translation without explicit segmentation`
+3. Bytes-level system
+   * `Byte-based neural machine translation`
+4. Planning mechanism 幫助提升 attention weights
+   * `Character-level neural machine translation with planning`
 
 # Subword-unit-based NMT
 
+介於 full word 和 character 之間的 subword-level 是目前在 NMT 中最常見的單位，從文字中抽取 subword 的方式有:
 
+1. Huffman-codes
+   * `Variable-length word encodings for neural translation models`
+2. Word-piece models
+   * `Japanese and korean voice search`
+3. Byte pair encoding (BPE)
+   * `A new algorithm for data compression`
+
+Byte pair encoding (BPE) 的作法如下: 
+
+1. 先從 character set 抓出一些可用的 subword units set
+2. 遞迴使用 subsequent merge operations 擴大 subword units set
+   1. 將 text 中 co-occurrences 最高的兩個 units 合併
+3. 至 vocabulary size 夠大時停止遞迴
+   1. Size 為手動制定，或依照資料大小制定
+
+
+
+
+
+> BPE 教學
 
 # Words, Subwords, or Characters?
 
