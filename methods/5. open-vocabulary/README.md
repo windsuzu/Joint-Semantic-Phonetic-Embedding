@@ -119,44 +119,41 @@ Character-based model 依然有 `segmentation dependent` 的問題存在
 
 Byte pair encoding (BPE) 的作法如下: 
 
-1. 先從 character set 抓出一些可用的 subword units set
+1. 先從 character set 抓出 subword units set
 2. 遞迴使用 subsequent merge operations 擴大 subword units set
    1. 將 text 中 co-occurrences 最高的兩個 units 合併
 3. 至 vocabulary size 夠大時停止遞迴
    1. Size 為手動制定，或依照資料大小制定
 
+> * 線上資源:
+> * [Byte pair encoding](https://en.wikipedia.org/wiki/Byte_pair_encoding)
+> * [深入理解 NLP Subword 算法：BPE、WordPiece、ULM](https://zhuanlan.zhihu.com/p/86965595)
 
+給定 BPE vocabulary 後，在切割文字 (segmentation) 時會出現很多不同的拆法，大多的 BPE 實作都是採用貪婪選擇最長的 subword units
 
-
-
-> BPE 教學
+Segmentation 也會依照對 subword 的限制 (constraints) 有所不同，最常見的限制是 subword 不能橫跨多個字，然而要實作這些限制，需要使用 tokenizer 容易產生潛在的 errors
 
 # Words, Subwords, or Characters?
 
+目前 word, subword, character 還沒有一個結論誰最適合做為 training units，而 character-based 似乎比 subword-based NMT 還要好，但比較難實作: 
 
+![](../../assets/character_subword_comparison.png)
 
+在傳統 SMT 的研究中 translation units 反而是越來越大的趨勢:
 
+1. Word-based IBM models
+   * `The mathematics of statistical machine translation`
+2. Phrase-based MT
+   * `Statistical Machine Translation`
+3. Hierarchical SMT
+   * `Hierarchical phrase-based translation`
 
+而 character, subword-based 的想法則是將字越取越小，想要抓到文字的真正含義 (meaning)，因為翻譯其實就是在兩種語言間傳遞 meaning
 
+補充一下，有一說法是 character, subword-based 源自於 `language's writing system`，而大多數的手寫系統並不是 `logographic` 而是 `alphabetic` 或 `syllabaric`
 
+所以圖形 (symbols) 是沒有任何含義的，在 [NMT-SMT 混合系統](../15.%20nmt-smt-hybrid/README.md) 中才加入了 `symbolic word-level or phrase-level` 的資訊給 NMT
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<img src="https://latex.codecogs.com/png.latex?"/>
+> * [Logogram - 語素文字](https://en.wikipedia.org/wiki/Logogram)
+> * [Phonogram - 表音文字](https://en.wikipedia.org/wiki/Phonogram_(linguistics))
+> * [Syllabary - 音節文字](https://en.wikipedia.org/wiki/Syllabary)
