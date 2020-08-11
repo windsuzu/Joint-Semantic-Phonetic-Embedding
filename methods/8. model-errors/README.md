@@ -38,7 +38,7 @@ Length normalization 將 `NMT probability` 除以 `sentence length`
 
 產生 length deficiency 的一種想法是缺少了確認 `source-side coverage` 的機制，也就是原句已有哪些被翻譯
 
-這個機制被用於 SMT 以 <img src="https://latex.codecogs.com/png.latex?C_{SMT}\in\{0,1\}^I"/> 矩陣，標記 source word 為 1 的代表已翻譯過，而 0 代表還沒被翻譯
+這個機制被用於 SMT 以 <img src="https://latex.codecogs.com/png.latex?\mathcal{C}_{SMT}\in\{0,1\}^I"/> 矩陣，標記 source word 為 1 的代表已翻譯過，而 0 代表還沒被翻譯
 
 這個機制能夠幫助對抗兩個問題，這兩個問題在 NMT 都有機會出現:
 
