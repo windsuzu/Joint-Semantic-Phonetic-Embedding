@@ -135,4 +135,3 @@ Back-translation 有一個替代方案為 `extract-edit scheme`，用編輯來�
 
 * `Findings of the 2018 conference on machine translation (WMT18)`
 * `Findings of the 2019 conference on machine translation (WMT19)`
-* 
