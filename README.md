@@ -5,7 +5,7 @@
 - [ ] Evaluate the performance of the system
 - [ ] Update the system with some skills and features
 - [ ] Think of a new approach
-- [ ] Evaluation
+- [ ] Evaluation (BLEU, perplexity, other semantic metrics...)
 - [ ] Identify the problem, find a solution, or leave a vision
 
 
