@@ -77,7 +77,7 @@ The NMT system is implemented as a **global attentional encoder-decoder network*
 
 ![](../assets/radical_features.png)
 
-### Network
+### Model
 
 整個網路架構如下:
 

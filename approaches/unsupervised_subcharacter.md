@@ -72,7 +72,7 @@ Baseline 我們稱為 Character level baseline:
 * UNMT system trained on Chinese–Japanese monolingual data
 * pre-tokenized into words, and then `BPE’ed` using `fastBPE` (character-level)
 
-#### Training parameters
+#### Model
 
 用同樣的系統，但將 character 進一步切成 sub-character，作法是直接再分解成 character-level 然後再透過 `fastBPE` 執行 BPE 一次。另外我們也分別控制 sharing rate `r` 為 `0.5`, `0.7`, `0.9`。
 
