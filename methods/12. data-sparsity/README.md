@@ -17,7 +17,7 @@ Deep Learning 最需要的還是資料，缺少資料的情況下大部分的 SM
 4. `Towards robust neural machine translation`
 5. `Assessing the tolerance of neural machine translation systems against speech recognition errors`
 
-要增加在 noise 情況下的 testing 效能可以從訓練模型觀看 synthetic noise 來下手:
+在不改善 noise 情況下想要增加效能的一種方法，是讓 model 在包含 synthetic noise 的情況下訓練。
 
 1. `Training on synthetic noise improves robustness to natural noise in machine translation`
 2. `Improving robustness of machine translation with synthetic noise`
