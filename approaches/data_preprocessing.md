@@ -34,13 +34,23 @@ Dataset 由 `Japanese-Chinese bidirectional machine translation competition (Ans
 
 ### Data pre-processing
 
-
-
 #### Parallel Data Filter
 
+儘管提供的 dataset 已經有篩選過，但還是有許多 `mismatched sentence pairs`，論文根據以下規則做 `re-filter`:
 
+1. 刪除 empty, duplicated sentences
+2. 刪除 source, target 一樣的 pairs
+3. 將所有中文轉成簡體
+4. 刪除 source 和 target 之間沒有 `common Chinese character` (Chu et al., 2014) 的 pairs
+5. 刪除英文和符號超過一半的 sentences
+6. Maximum length ratio of sentence pairs = 1.8
+7. 使用 fasttext 的 `language identification model` (Joulin et al., 2016b,a) 重新建構中文和日文句子
+
+論文作者用手動調整的方式，得到上面所有的規則，簡化了原有的 `22.3 million parallel sentences`
 
 #### Web Crawled Sentence Alignment
+
+
 
 
 
