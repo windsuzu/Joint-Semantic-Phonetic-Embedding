@@ -21,6 +21,8 @@
 
 ## Dataset
 
+![](../assets/anseri_dataset.png)
+
 Dataset 由 `Japanese-Chinese bidirectional machine translation competition (Ansari et al., 2020)` 而來，為主辦單位提供的大量但有 noise 的 Japanese-Chinese pairs，這些資料從網頁上抓取而來，主要分成四個部分:
 
 1. 對已有的 `Japanese-Chinese parallel datasets` 進行清理，得到雖然小但乾淨的資料集
@@ -46,22 +48,56 @@ Dataset 由 `Japanese-Chinese bidirectional machine translation competition (Ans
 6. Maximum length ratio of sentence pairs = 1.8
 7. 使用 fasttext 的 `language identification model` (Joulin et al., 2016b,a) 重新建構中文和日文句子
 
-論文作者用手動調整的方式，得到上面所有的規則，簡化了原有的 `22.3 million parallel sentences`
+論文作者用手動調整的方式，得到上面所有的規則，將 Part A~D 的資料 (182.5 M) 縮減成 22.3 M 的 `parallel sentences`  資料集
 
 #### Web Crawled Sentence Alignment
 
+主辦方所提供的 Part D 為接近 15 M 的 `unaligned bilingual document pairs` 需要自己去對齊，論文作者提出了一種方法:
 
+1. 將每個 sentence 當作一個 element
+2. 使用 `longest common sub-sequence algorithm`
+3. 找出擁有最高 `F1 similarity` 的 jp-zh sentence pairs
+4. score(Ci, Jj) 表示透過 character overlap 所計算出來的 F1 value
 
+![](../assets/f1_similarity_sentence_pairs.png)
 
+可惜的是 Part D 部分有大量重複句子，最後只獲得了 2.7 M 的 sentence pairs
 
 ### Back-translation
 
+論文作者從 Part D 取出 200 M 的中文句子作為 `monolingual data` 來實施 `back-translation` (Edunov et al., 2018)，為了用中文來產生 `synthetic bilingual corpus`，作者利用 `parallel data filter` 的 22.3 M 資料訓練了一個 `Chinese-to-Japanese transformer`。
 
+另外在使用 `sharing BPE` 和 `truncating vocabulary size` 都能有效提升中翻日的 `transformer` 表現；實驗中的 `BPE merge operation` 次數為 30k，所以在 truncated 版本中，共有 40k 個 `BPE tokens`。
+
+![](../assets/chinese_to_japanese_strategy.png)
+
+另外在 `back-translation` 中的 data 會加入 noise 讓表現更好:
+
+1. 一個字會有 10% 被刪除
+2. 一個字會有 10% 被 `placeholder token` 取代
+3. 隨機換字的位子，但距離不超過 3 個字
 
 ### Model
 
+論文會對 baseline 的 `transformer` 加入兩個小手段來增加表現:
 
+1. Bigger Transformer
+2. Relative Position Representation
+
+#### Bigger Transformer
+
+根據 Sun et al., 2019 實驗結果，增加 model capacity 能讓表現增加。所以作者將 `feed-forward dimension` 從 4096 增加到 8192，另外為了解決 `overfitting` 作者將 `relu dropout` 從 0.1 調到 0.3。 
+
+#### Relative Position Representation
+
+在 `self-attention` 中，通常都會使用 `absolute position information` 作為 `positional encoding` 的手段，但在最近的實驗中 (Shaw et al., 2018) 發現，使用 `relative position` 當作 feature 可以取得較好的表現。
+
+#### Experiments
+
+實驗使用 [tensor2tensor](https://github.com/tensorflow/tensor2tensor) 的 `transformer_relative_big`，只改動了 `feed-forward dimension` 和 `dropout`，每 1000 步存檔一次，將最後三個 `checkpoints` 平均起來獲得 `final model`。在 decoding 部分，最終是使用 `beam size = 6` 以及 `alpha = 0.8`，產生結果後將 `<UNK>` 刪除。
 
 ## Result
 
+作者用固定的架構來測試不同的資料集，比較 `data processing` 的效果。隨著 data 增加，還有 data processing 的加強，甚至是最後對 model 增強，都有效提高分數。
 
+![](../assets/data_processing_results.png)
