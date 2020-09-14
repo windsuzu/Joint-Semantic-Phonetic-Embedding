@@ -1,12 +1,37 @@
-# TODO
+# Enhance Chinese-to-Japanese Neural Machine Translation
 
-- [ ] Learning Training skills
-- [ ] Implement a new tf transformer translation system
-- [ ] Evaluate the performance of the system
-- [ ] Update the system with some skills and features
-- [ ] Think of a new approach
-- [ ] Evaluation (BLEU, perplexity, other semantic metrics...)
-- [ ] Identify the problem, find a solution, or leave a vision
+## Methods
+
+| **Topic**                                                       | **Content**                                                                                                                                                                                                                                                                                            |
+| --------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| [Embedding](methods/1.%20embedding/README.md)                   | Embedding 介紹，包含：<br/><ul><li>Word-level</li><li>Phrase-level</li><li>Sentence-level</li></ul>                                                                                                                                                                                                    |
+| [Encoder-Decoder](methods/2.%20encoder-decoder/README.md)       | 現今 NMT 主流架構，但被固定長度的 Embedding 所限制。                                                                                                                                                                                                                                                   |
+| [Attention](methods/3.%20attention/README.md)                   | Attention, Self-attention, Multi-head attention 是 NMT 成功的主要原因，裡面還比較了 RNN 和 CNN-based NMT，必看影片：<br/><ul><li>[Conditional Generation by RNN & Attention](https://www.youtube.com/watch?v=f1KUUz7v8g4)</li><li>[Transformer](https://www.youtube.com/watch?v=ugWDIIOHtPA)</li></ul> |
+| [Decoding](methods/4.%20decoding/README.md)                     | Decoding 是最終翻譯過程的核心，最常見的方法有：<br/><ul><li>Beam Search</li><li>Generating Diverse Translations</li><li>[Top-k sampling](approaches/octanove.md)</li></ul>另外還有即時翻譯的 decoding 方法。                                                                                           |
+| [Open-Vocabulary](methods/5.%20open-vocabulary/README.md)       | 如何解決單字量過多膨脹的問題？使用 UNK token，或是改變模型的輸入為：<br><ul><li>Word-based NMT</li><li>Character-based NMT</li><li>Subword-based NMT</li></ul>其中 subword 擷取的最常見方法為 BPE (Byte pair encoding)。                                                                               |
+| [Monolingual dataset](methods/6.%20monolingual/README.md)       |
+| [Multilingual NMT](methods/7.%20multilingual/README.md)         |
+| [Model Errors](methods/8.%20model-errors/README.md)             |
+| [Training Methods](methods/9.%20training-methods/README.md)     |
+| [Interpretability](methods/10.%20interpretability/README.md)    |
+| [Alternative Models](methods/11.%20alternatives/README.md)      |
+| [Data Sparsity](methods/12.%20data-sparsity/README.md)          |
+| [Model Size](methods/13.%20model-size/README.md)                |
+| [Extended Context](methods/14.%20extended-context/README.md)    |
+| [NMT-SMT Hybird System](methods/15.%20nmt-smt-hybrid/README.md) |
+
+## Approaches
+
+
+
+## Motivation
+
+
+## Datasets
+
+
+## Experiments
+
 
 
 # DeepL
@@ -105,7 +130,16 @@ BLEU => transformer-only implementation
 
 Blind testing through questionnaire
 
-# Progress
+## Progress
+
+- [x] Learning Training skills
+- [x] Implement a new tf transformer translation system
+- [ ] **Collect datasets**
+- [ ] Evaluate the performance of the system
+- [ ] Update the system with some skills and features
+- [ ] Think of a new approach
+- [ ] Evaluation (BLEU, perplexity, other semantic metrics...)
+- [ ] Identify the problem, find a solution, or leave a vision
 
 1. 先搞懂所有 translation 訓練方法
 2. 試做基本翻譯系統 (transformer, CNN)

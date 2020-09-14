@@ -4,7 +4,7 @@ NMT 要計算的 <img src="https://latex.codecogs.com/png.latex?P(y\mid%20x)"/> 
 
 利用 source sentence `x` 來求出最接近的 <img src="https://latex.codecogs.com/png.latex?\hat{y}"/> 的這個任務叫做 **decoding** 或是 **inference**
 
-<img src="https://latex.codecogs.com/png.latex?\hat {y}=\argmax_{y\in\sum}P(y\mid%20x)"/>
+<img src="https://latex.codecogs.com/png.latex?\hat{y}=\underset{y\in\sum}{\text{argmax}}\,P(y\mid%20x)"/>
 
 NMT decoding 有兩大重點:
 

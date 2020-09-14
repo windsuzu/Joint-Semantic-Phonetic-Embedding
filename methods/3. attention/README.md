@@ -113,7 +113,7 @@ Context vector <img src="https://latex.codecogs.com/png.latex?c_j(x)"/> 是 sour
 
 RNNsearch 是使用 bidirectional RNN 來產生 annotation (`h`)，`f(.)` 通常是 LSTM 或 GRU
 
-<img src="https://latex.codecogs.com/png.latex?\begin{aligned}h_i&=\left[\overrightarrow{h_i};\,\overleftarrow{h_i}\right]\\\overrightarrow{h_i}&=\overrightarrow{f}(x_i,\overrightarrow{h_{i-1}})\\\overleftarrow{h_i}&=\overleftarrow{f}(x_i, \overleftarrow{h_{i+1}})\end{aligned}"/>
+<img src="https://latex.codecogs.com/png.latex?\begin{aligned}h_i&=\left[\overrightarrow{h_i};\,\overleftarrow{h_i}\right]\\\overrightarrow{h_i}&=\overrightarrow{f}(x_i,\overrightarrow{h_{i-1}})\\\overleftarrow{h_i}&=\overleftarrow{f}(x_i,\overleftarrow{h_{i+1}})\end{aligned}"/>
 
 Context vector <img src="https://latex.codecogs.com/png.latex?c_j(x)"/> 就是 `h` (annotations as weighted sum) 和 weights <img src="https://latex.codecogs.com/png.latex?\alpha_j\in\left[0,1\right]^I"/> 的相乘:
 
