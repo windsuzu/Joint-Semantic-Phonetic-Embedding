@@ -22,135 +22,55 @@
 
 ## Approaches
 
-| **Approaches**                                                                                                                                                                    | **Description** |
-| --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------- |
-| [Chinese–Japanese Unsupervised Neural Machine Translation Using Sub-character Level Information Unsupervised neural machine translation](approaches/unsupervised_subcharacter.md) | TBD             |
-| [Improving Character-level Japanese-Chinese Neural Machine Translation with Radicals as an Additional Input Feature](approaches/radical_feature.md)                               | TBD             |
-| [LIT Team’s System Description for Japanese-Chinese Machine](approaches/data_preprocessing.md)                                                                                    | TBD             |
-| [Octanove Labs’ Japanese-Chinese Open Domain Translation System](approaches/octanove.md)                                                                                          | TBD             |
+| **Approaches**                                                                                                                                                                    | **Description**                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [Chinese–Japanese Unsupervised Neural Machine Translation Using Sub-character Level Information Unsupervised neural machine translation](approaches/unsupervised_subcharacter.md) | 作者將 UNMT 運用於中日文這類 `logographic languages`，特別是將中日文切成更小的 `sub-character-level` 來實作。裡面運用到的最新方法為：<br/><ul><li>Shared BPE Embeddings</li><li>Encoder–Decoder Language Models</li><li>Back-Translation</li></ul>結果展示了 `sub-character` 和 `high token sharing rate` 的重要性，也點出了 quality metrics 的不足。                                                                                       |
+| [Improving Character-level Japanese-Chinese Neural Machine Translation with Radicals as an Additional Input Feature](approaches/radical_feature.md)                               | 作者嘗試在 character-level NMT 加入額外特徵－部首 (radical)。因為中文屬於 `logograms`，無法拆成 `subword-level`，所以作者基於 `character-level` 找到了部首當作特徵。<br/>結果展示了部首當作特徵能提升效能，甚至翻譯出 reference 沒有翻譯成功的單詞。                                                                                                                                                                                        |
+| [LIT Team’s System Description for Japanese-Chinese Machine](approaches/data_preprocessing.md)                                                                                    | IWSLT 2020 open domain translation task 的回饋，該 task 強調 **open domain** 的翻譯，並且給予大量含雜訊資料集，而作者使用了以下方法處理資料集：<br/><ul><li>Parallel Data Filter</li><li>Web Crawled Sentence Alignment</li><li>Back-translation</li></ul>並且對 baseline 模型進行了以下加強：<br><ul><li>Bigger Transformer</li><li>Relative Position Representation</li></ul>實驗結果每個方法都起到了幫助。                               |
+| [Octanove Labs’ Japanese-Chinese Open Domain Translation System](approaches/octanove.md)                                                                                          | 同上為 IWSLT 2020 open domain translation task 的回饋，作者利用以下方法處理資料集：<br/><ul><li>Parallel Corpus Filtering</li><li>Back-Translation</li></ul>而模型做了以下處理：<br/><ul><li>Random parameter search</li><li>ensembling</li></ul>作者先對資料進行分析，並自訂 `rules` 和 `classifiers` 來去除不必要資料，且隨著 `back-translation` 使用率提高，獲得更好成積。<br/>另外也提出了 `top-k sampling` 與 `external data` 的幫助。 |
 
 ## Motivation
 
-
-
 ## Datasets
 
+## Method
+
+## Measurement
 
 ## Experiments
 
+## Results
 
+## Resources
 
-# DeepL
+| Field            | Description                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| DeepL            | [DeepL 已經很好，但在中日翻譯還是有問題](https://techcrunch.com/2017/08/29/deepl-schools-other-online-translators-with-clever-machine-learning/)                                                                                                                                                                                                                                                                             |
+| Transformer      | [淺談神經機器翻譯 & 用 Transformer 與 TensorFlow 2 英翻中](https://leemeng.tw/neural-machine-translation-with-transformer-and-tensorflow2.html)                                                                                                                                                                                                                                                                              |
+| NMT Review       | [Neural Machine Translation: A Review](https://arxiv.org/pdf/1912.02047.pdf)                                                                                                                                                                                                                                                                                                                                                 |
+| Unsupervised NMT | <ul><li>Task: [Unsupervised Machine Translation](https://paperswithcode.com/task/unsupervised-machine-translation)</li><li>Paper: [Phrase-Based & Neural Unsupervised Machine Translation](https://paperswithcode.com/paper/phrase-based-neural-unsupervised-machine)</li></ul>                                                                                                                                              |
+| Low resource NMT | <ul><li>Task: [Low-Resource Neural Machine Translation](https://paperswithcode.com/task/low-resource-neural-machine-translation)</li><li>Paper: [The FLoRes Evaluation Datasets for Low-Resource Machine Translation](https://paperswithcode.com/paper/two-new-evaluation-datasets-for-low-resource)</li></ul>                                                                                                               |
+| Reinforcement    | <ul><li>Paper: [A Reinforced Generation of Adversarial Examples for Neural Machine Translation](https://www.aclweb.org/anthology/2020.acl-main.319/)</li></ul>                                                                                                                                                                                                                                                               |
+| Adversarial      | <ul><li>Paper: [AdvAug: Robust Adversarial Augmentation for Neural Machine Translation](https://www.aclweb.org/anthology/2020.acl-main.529/)</li><li>Paper: [Adversarial and Domain-Aware BERT for Cross-Domain Sentiment Analysis](https://www.aclweb.org/anthology/2020.acl-main.370/)</li></ul>                                                                                                                           |
+| Multimodal       | <ul><li>Task: [Multimodal Machine Translation](https://paperswithcode.com/task/multimodal-machine-translation)</li></ul>                                                                                                                                                                                                                                                                                                     |
+| CNN              | <ul><li>SOTA: [Machine Translation on WMT 2017 English-Chinese](https://paperswithcode.com/sota/machine-translation-on-wmt-2017-english-1)</li><li>Paper: [Pay Less Attention with Lightweight and Dynamic Convolutions](https://paperswithcode.com/paper/pay-less-attention-with-lightweight-and)</li><li>Notes: [Pay less attention with light-weight &dynamic CNN](https://zhuanlan.zhihu.com/p/60482693)</li></ul>       |
+| Score Metrics    | <ul><li>[Bleu: a Method for Automatic Evaluation of Machine Translation](https://www.aclweb.org/anthology/P02-1040/)</li><li>[A Call for Clarity in Reporting BLEU Scores](https://paperswithcode.com/paper/a-call-for-clarity-in-reporting-bleu-scores)</li><li>[Beyond BLEU: Training Neural Machine Translation with Semantic Similarity](https://paperswithcode.com/paper/beyond-bleu-training-neural-machine)</li></ul> |
 
-https://techcrunch.com/2017/08/29/deepl-schools-other-online-translators-with-clever-machine-learning/
+## Idea
 
-DeepL 已經很好，但在中日翻譯還是有問題
-
-# Motivation (我可以做什麼別人沒做過的，別人沒用的方法)
-
-我想提升中文和日文的翻譯效能
-JPCN
-https://www.aclweb.org/anthology/2020.iwslt-1.12/
-https://www.aclweb.org/anthology/2020.iwslt-1.20/
-
-Unsupervised learning
-https://paperswithcode.com/paper/phrase-based-neural-unsupervised-machine
-https://paperswithcode.com/task/unsupervised-machine-translation
-
-Low resource learning
-https://paperswithcode.com/task/low-resource-neural-machine-translation
-https://paperswithcode.com/paper/two-new-evaluation-datasets-for-low-resource
-
-Reinforcement
-https://www.aclweb.org/anthology/2020.acl-main.319/
-
-Adversarial
-https://www.aclweb.org/anthology/2020.acl-main.529/
-https://www.aclweb.org/anthology/2020.acl-main.370/
-
-或許能用一個文法 discriminator 來強化 generator
-
-Multimodal
-https://paperswithcode.com/task/multimodal-machine-translation
-
-
-# Method (哪些東西可以幫助我，現有的方法，基於這些方法再加上我的方法)
-
-所有 NMT 技巧
-https://arxiv.org/pdf/1912.02047.pdf
-
-Transformer
-https://leemeng.tw/neural-machine-translation-with-transformer-and-tensorflow2.html
-
-CNN
-https://paperswithcode.com/sota/machine-translation-on-wmt-2017-english-1
-https://paperswithcode.com/paper/pay-less-attention-with-lightweight-and
-https://zhuanlan.zhihu.com/p/60482693
-
-分析
-https://paperswithcode.com/paper/how-much-attention-do-you-need-a-granular
-
-Scoring
-BLEU
-https://paperswithcode.com/search?q_meta=&q=translation+evaluation
-
-
-# Other j-c implementation
-
-1. Chinese–Japanese Unsupervised Neural Machine Translation Using Sub-character Level Information
-Unsupervised neural machine translation
-
-logographic language pairs
-Sub-character Level Information (ideograph or stroke)
-
-sub-character-level > character-level
-stroke > ideograph
-
----
-
-2. Improving Character-level Japanese-Chinese Neural Machine Translation with Radicals as an Additional Input Feature
-
-additional linguistic features in character-level NMT
-radicals of Chinese characters (or kanji)
-
----
-
-3. LIT Team’s System Description for Japanese-Chinese Machine
-
-data processing
-Large-scale back-translation on monolingual corpus
-exclusive word embedding
-different granularity of tokens like sub-word level
-
----
-
-4. Octanove Labs’ Japanese-Chinese Open Domain Translation System
-
-parallel corpus filtering
-back translation
-
-# Measurement, Contribution
-
-BLEU => transformer-only implementation
-=> try to break it
-
-Blind testing through questionnaire
+| Field     | Description                                     |
+| --------- | ----------------------------------------------- |
+| Adversial | 或許能用一個文法 discriminator 來強化 generator |
 
 ## Progress
 
 - [x] Learning Training skills
 - [x] Implement a new tf transformer translation system
 - [ ] **Collect datasets**
+- [ ] Training (or find a useful library)
 - [ ] Evaluate the performance of the system
 - [ ] Update the system with some skills and features
 - [ ] Think of a new approach
-- [ ] Evaluation (BLEU, perplexity, other semantic metrics...)
+- [ ] Evaluation (BLEU, perplexity, other semantic metrics, blind testing...)
+- [ ] **Contribute a different evaluation method**
 - [ ] Identify the problem, find a solution, or leave a vision
-
-1. 先搞懂所有 translation 訓練方法
-2. 試做基本翻譯系統 (transformer, CNN)
-3. 測試他們的分數 (SOTA baseline, Japanese-Chinese baseline)
-4. 開始加入一些特徵
-5. 使用自己的方法
-6. 測試分數、若不夠好再加上盲測
-7. 實際找出問題，想辦法解決、或留下未來展望
