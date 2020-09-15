@@ -106,6 +106,15 @@ MLE training 有一些問題:
    1. 在訓練時用的是 word-level cross-entropy
    2. 在測試時用的是 sentence- 或 document-level 的 BLEU
 
+> * 什麼是 exposure bias? (需要先有 teacher forcing 和 autoregressive 的知識)
+>   * [Seq2Seq中Exposure Bias现象的浅析与对策](https://kexue.fm/archives/7259)
+> * 什麼是 teacher forcing?
+>   * [Teacher Forcing策略在RNN的应用](https://blog.csdn.net/wl1710582732/article/details/88636852)
+> * 什麼是 autoregressive?
+>   * [Autoregressive model](https://en.wikipedia.org/wiki/Autoregressive_model)
+> * 什麼是 non-autoregressive?
+>   * [Improving Autoregressive NMT with Non-Autoregressive Model](https://www.aclweb.org/anthology/2020.autosimtrans-1.4/)
+
 這些問題可透過 `reinforcement learning` 改善，以下簡單介紹 `reinforcement learning`:
 
 1. `Agent` 會透過選擇 `action` 來和 `environment` 互動
@@ -121,7 +130,7 @@ MLE training 有一些問題:
 
 用 `reinforcement learning` 訓練的 NMT 有一個好處，就是 reward **不需要滿足可微分**，也就是能使用 `BLEU` 或 `GLEU` 等 metrics，但這會讓 training 非常昂貴，所以通常還是使用 `cross-entropy loss`
 
-但 `reinforcement learning` 雖然在其他領域取得巨大成就，但目前還是無法在 MT 方法突破一些 baseline (e.g., SOTA NMT architecture, back-translation)
+雖然 `reinforcement learning` 在其他領域取得巨大成就，但目前還是無法在 MT 方法突破一些 baseline (e.g., SOTA NMT architecture, back-translation)
 
 `Google’s neural machine translation system: Bridging the gap between human and machine translation` 就指出他們採用 `BLEU` 做為 reward 的 `reinforcement learning` 無法取得好的成果
 

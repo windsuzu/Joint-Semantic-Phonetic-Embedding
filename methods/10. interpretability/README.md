@@ -66,6 +66,10 @@ Deep Neural Models 的預測結果是非常難解釋的，因為其中牽涉了�
 
 # Word Alignment in Neural Machine Translation
 
+> * 什麼是 word alignment?
+>   * [Bitext word alignment](https://en.wikipedia.org/wiki/Bitext_word_alignment)
+>   * [What is word alignment in the natural language processing domain?](https://www.quora.com/What-is-word-alignment-in-the-natural-language-processing-domain)
+
 Word Alignment 是傳統 SMT 的核心之一，因為 SMT 中的 target 和 source phrases 都有很強烈的對應關係，所以 `word alignment` 可以視為翻譯結果的解釋
 
 Word alignment 被公認是 MT 中很重要的工具:

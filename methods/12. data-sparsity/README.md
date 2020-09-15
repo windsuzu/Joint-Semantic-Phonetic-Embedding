@@ -111,6 +111,9 @@ A series of NIST evaluation campaigns called `LoReHLT` focuses on `low-resource 
 
 # Unsupervised NMT
 
+> * Notes on Unsupervised Neural Machine Translation
+> * https://zhuanlan.zhihu.com/p/30649985
+
 `Unsupervised NMT` 不使用任何 `cross-lingual data` 而是完全只用 `(unrelated) monolingual data` 來訓練，通常一開始會有一個 `unsupervised cross-lingual word embedding model`
 
 * `Word translation without parallel data`
