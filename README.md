@@ -28,20 +28,64 @@
 | [Improving Character-level Japanese-Chinese Neural Machine Translation with Radicals as an Additional Input Feature](approaches/radical_feature.md)                               | 作者嘗試在 character-level NMT 加入額外特徵－部首 (radical)。因為中文屬於 `logograms`，無法拆成 `subword-level`，所以作者基於 `character-level` 找到了部首當作特徵。<br/>結果展示了部首當作特徵能提升效能，甚至翻譯出 reference 沒有翻譯成功的單詞。                                                                                                                                                                                        |
 | [LIT Team’s System Description for Japanese-Chinese Machine](approaches/data_preprocessing.md)                                                                                    | IWSLT 2020 open domain translation task 的回饋，該 task 強調 **open domain** 的翻譯，並且給予大量含雜訊資料集，而作者使用了以下方法處理資料集：<br/><ul><li>Parallel Data Filter</li><li>Web Crawled Sentence Alignment</li><li>Back-translation</li></ul>並且對 baseline 模型進行了以下加強：<br><ul><li>Bigger Transformer</li><li>Relative Position Representation</li></ul>實驗結果每個方法都起到了幫助。                               |
 | [Octanove Labs’ Japanese-Chinese Open Domain Translation System](approaches/octanove.md)                                                                                          | 同上為 IWSLT 2020 open domain translation task 的回饋，作者利用以下方法處理資料集：<br/><ul><li>Parallel Corpus Filtering</li><li>Back-Translation</li></ul>而模型做了以下處理：<br/><ul><li>Random parameter search</li><li>ensembling</li></ul>作者先對資料進行分析，並自訂 `rules` 和 `classifiers` 來去除不必要資料，且隨著 `back-translation` 使用率提高，獲得更好成積。<br/>另外也提出了 `top-k sampling` 與 `external data` 的幫助。 |
+| CASIA’s System for IWSLT 2020 Open Domain Translation                                                                                                                             | <ul><li>[Video](https://slideslive.com/38929589/casias-system-for-iwslt-2020-open-domain-translation)</li><li>[PDF](https://www.aclweb.org/anthology/2020.iwslt-1.15/)                                                                                                                                                                                                                                                                      |
+
 
 ## Motivation
 
+NMT 透過 attention, transformer 效能提升，再加上 back-translation, corpus filtering 技術進一步提升，還有什麼方法可以進一步提升。
+
+受到兩篇論文的啟發:
+
+1. Diversity by Phonetics and its Application in Neural Machine Translation
+2. Robust Neural Machine Translation with Joint Textual and Phonetic Embedding
+
+使用讀音資訊作為新的特徵。
+
 ## Datasets
+
+| Provenance                                                                                                                           | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                | Link                                                                                                                                                                                                               | Date |
+| ------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---- |
+| IWSLT 2020 - Open Domain Translation                                                                                                 | <ul><li>`existing_parallel` 包含: <ul><li>Global Voices</li><li>News Commentary</li><li>Ubuntu corpora (OPUS)</li><li>OpenSubtitles (Lison and Tiedemann, 2016)</li><li>TED Talks (Dabre and Kurohashi, 2017)</li><li>Wikipedia (Chu et al., 2014, 2015)</li><li>WikiMatrix (Schwenk et al., 2019)</li><li>Tatoeba.org</li></ul></li><li>`webcrawled parallel filtered` 包含 19M "可能"平行的資料</li><li>`webcrawled parallel unfiltered` 包含 161.5M 較差的平行資料</li><li>`webcrawled unaligned` 包含 15.6M 各種網站兩種語言的"可能"平行資料</li></ul> | <ul><li>[PDF](https://www.aclweb.org/anthology/2020.iwslt-1.1.pdf#page=12)</li><li>[Dataset](https://github.com/didi/iwslt2020_open_domain_translation)</li></ul>                                                  | 2020 |
+| [WAT 2020 The 7th Workshop on Asian Translation](http://lotus.kuee.kyoto-u.ac.jp/WAT/WAT2020/index.html) (Unfree)                    | 包含三大資料集，但都需要寄信審核索取。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     | <ul><li>[ASPEC](http://lotus.kuee.kyoto-u.ac.jp/ASPEC/)</li><li>[JPO Patent Corpus](http://lotus.kuee.kyoto-u.ac.jp/WAT/patent/)</li><li>[JIJI Corpus](http://lotus.kuee.kyoto-u.ac.jp/WAT/jiji-corpus/)</li></ul> | 2020 |
+| Japanese to English/Chinese/Korean Datasets for Translation Quality Estimation and Automatic Post-Editing                            | 簡單資料集，用來測試 QE 和 APE 的。 (travel (8,783 segments), hospital (1,676 segments))                                                                                                                                                                                                                                                                                                                                                                                                                                                                   | <ul><li>[PDF](https://www.aclweb.org/anthology/W17-5705.pdf)</li><li>[Dataset](http://paraphrasing.org/~fujita/resources/NICT-QEAPE.html)</li></ul>                                                                | 2017 |
+| Inflating a Small Parallel Corpus into a Large Quasi-parallel Corpus Using Monolingual Data for Chinese-Japanese Machine Translation | 有講解中日資料集缺乏的問題，還有他解決的方法。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             | [PDF](https://www.jstage.jst.go.jp/article/ipsjjip/25/0/25_88/_article/-char/en)                                                                                                                                   | 2017 |
+| Constructing a Chinese—Japanese Parallel Corpus from Wikipedia                                                                       | 從維基百科自動擷取的中日平行資料，包含:<ul><li>126,811 parallel sentences</li><li>131,509 parallel fragments</li><li>198 dev</li><li>198 test</li></ul>                                                                                                                                                                                                                                                                                                                                                                                                    | <ul><li>[PDF](https://www.aclweb.org/anthology/L14-1209/)</li><li>[Dataset](http://nlp.ist.i.kyoto-u.ac.jp/EN/index.php?Wikipedia%20Chinese-Japanese%20Parallel%20Corpus)</li></ul>                                | 2015 |
+| JEC Basic Sentence Data                                                                                                              | Excel file containing all the sentences in Japanese, English and Chinese, it contains: 5304 sentences                                                                                                                                                                                                                                                                                                                                                                                                                                                      | [Dataset](http://nlp.ist.i.kyoto-u.ac.jp/EN/index.php?JEC%20Basic%20Sentence%20Data)                                                                                                                               | 2011 |
 
 ## Method
 
-## Measurement
+1. Feature Extraction
+   1. Bopomofo
+   2. Hiragana
+2. Data Preprocessing
+   1. Escape character transformation
+   2. Numbers and punctuation normalization
+   3. Segmentation
+      1. Jieba (Chinese) 
+      2. Mecab (Japanese)
+   4. BPE for subword tokenization
+3. Embedding
+   1. Semantic
+   2. Phonetic
+   3. Mixed
+   4. Unsupervised Relation Binding
+4. Transformer, ConvS2S
+5. Metrics
+   1. BLEU
+   2. Quality Estimation
+6. Data Augmentation
+   1. Corpus Filtering
+   2. Back-Translation
 
 ## Experiments
 
+
 ## Results
 
-## Resources
+
+## Other Resources
+
 
 | Field            | Description                                                                                                                                                                                                                                                                                                                                                                                                                  |
 | ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -55,22 +99,24 @@
 | Multimodal       | <ul><li>Task: [Multimodal Machine Translation](https://paperswithcode.com/task/multimodal-machine-translation)</li></ul>                                                                                                                                                                                                                                                                                                     |
 | CNN              | <ul><li>SOTA: [Machine Translation on WMT 2017 English-Chinese](https://paperswithcode.com/sota/machine-translation-on-wmt-2017-english-1)</li><li>Paper: [Pay Less Attention with Lightweight and Dynamic Convolutions](https://paperswithcode.com/paper/pay-less-attention-with-lightweight-and)</li><li>Notes: [Pay less attention with light-weight &dynamic CNN](https://zhuanlan.zhihu.com/p/60482693)</li></ul>       |
 | Score Metrics    | <ul><li>[Bleu: a Method for Automatic Evaluation of Machine Translation](https://www.aclweb.org/anthology/P02-1040/)</li><li>[A Call for Clarity in Reporting BLEU Scores](https://paperswithcode.com/paper/a-call-for-clarity-in-reporting-bleu-scores)</li><li>[Beyond BLEU: Training Neural Machine Translation with Semantic Similarity](https://paperswithcode.com/paper/beyond-bleu-training-neural-machine)</li></ul> |
+| WMT 20           | http://www.statmt.org/wmt20/index.html                                                                                                                                                                                                                                                                                                                                                                                       |
+
+
 
 ## Idea
 
 | Field     | Description                                     |
 | --------- | ----------------------------------------------- |
 | Adversial | 或許能用一個文法 discriminator 來強化 generator |
+| Phonetic  | 利用語音作為新的特徵，同時和文字訓練            |
 
 ## Progress
 
 - [x] Learning Training skills
 - [x] Implement a new tf transformer translation system
 - [ ] **Collect datasets**
-- [ ] Training (or find a useful library)
-- [ ] Evaluate the performance of the system
-- [ ] Update the system with some skills and features
-- [ ] Think of a new approach
+- [ ] Training with a transformer, ConvS2S library
 - [ ] Evaluation (BLEU, perplexity, other semantic metrics, blind testing...)
+- [ ] Update the system with some skills and features, new ideas
 - [ ] **Contribute a different evaluation method**
 - [ ] Identify the problem, find a solution, or leave a vision
