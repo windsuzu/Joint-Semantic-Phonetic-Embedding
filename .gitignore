@@ -6,3 +6,5 @@ tokenizer/
 dataset/
 wandb/
 artifacts/
+checkpoints/
+logs/
