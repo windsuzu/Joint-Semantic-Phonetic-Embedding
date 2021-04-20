@@ -1,0 +1,8 @@
+.ipynb_checkpoints/
+*.swp
+
+data_module/
+tokenizer/
+dataset/
+wandb/
+artifacts/

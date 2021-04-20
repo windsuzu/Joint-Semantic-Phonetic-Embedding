@@ -1,6 +1,149 @@
-# Enhance Chinese-to-Japanese Neural Machine Translation
+# Phonetics in Chinese-Japanese Machine Translation
 
-## Methods
+這是我的碩士論文。
+
+![](assets/cover.jpg)
+
+## Table of Contents
+
+* [Phonetics in Chinese-Japanese Machine Translation](#phonetics-in-chinese-japanese-machine-translation)
+  * [Table of Contents](#table-of-contents)
+  * [Motivation](#motivation)
+  * [Related Work](#related-work)
+  * [Dataset](#dataset)
+  * [RoadMap](#roadmap)
+  * [Method](#method)
+    * [Tokenization](#tokenization)
+    * [Model](#model)
+      * [RNN Seq2Seq](#rnn-seq2seq)
+      * [Transformers](#transformers)
+    * [Embedding](#embedding)
+    * [Metric](#metric)
+    * [Future](#future)
+  * [Program](#program)
+  * [Experiment](#experiment)
+  * [Backup](#backup)
+    * [NMT Background](#nmt-background)
+    * [NMT Datasets](#nmt-datasets)
+    * [NMT Contemporary Approaches](#nmt-contemporary-approaches)
+    * [NMT Resources](#nmt-resources)
+
+## Motivation
+
+這幾年神經機器翻譯 (NMT) 透過 `attention`, `transformer` 讓效能快速提升，而現在的研究主要加上 `back-translation`, `corpus filtering` 等 generalized 的技術進一步提升。但在中文及日文的直接機器翻譯中，還是存在各種的翻譯錯誤，所以我想知道還有什麼方法可以特別針對中↔日翻譯進行改進，提升效能。
+
+而我受到兩篇論文的啟發:
+
+1. Diversity by Phonetics and its Application in Neural Machine Translation
+2. Robust Neural Machine Translation with Joint Textual and Phonetic Embedding
+
+希望能使用中日文特有的讀音資訊作為新的特徵。
+
+## Related Work
+
+| Paper                                                                                                                                                                             | Description                                                                                                                                                                                                                                                                                                                                           |
+| --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Diversity by Phonetics and its Application in Neural Machine Translation                                                                                                          |                                                                                                                                                                                                                                                                                                                                                       |
+| Robust Neural Machine Translation with Joint Textual and Phonetic Embedding                                                                                                       |                                                                                                                                                                                                                                                                                                                                                       |
+| [Chinese–Japanese Unsupervised Neural Machine Translation Using Sub-character Level Information Unsupervised neural machine translation](approaches/unsupervised_subcharacter.md) | 作者將 UNMT 運用於中日文這類 `logographic languages`，特別是將中日文切成更小的 `sub-character-level` 來實作。裡面運用到的最新方法為：<br/><ul><li>Shared BPE Embeddings</li><li>Encoder–Decoder Language Models</li><li>Back-Translation</li></ul>結果展示了 `sub-character` 和 `high token sharing rate` 的重要性，也點出了 quality metrics 的不足。 |
+| [Improving Character-level Japanese-Chinese Neural Machine Translation with Radicals as an Additional Input Feature](approaches/radical_feature.md)                               | 作者嘗試在 character-level NMT 加入額外特徵－部首 (radical)。因為中文屬於 `logograms`，無法拆成 `subword-level`，所以作者基於 `character-level` 找到了部首當作特徵。<br/>結果展示了部首當作特徵能提升效能，甚至翻譯出 reference 沒有翻譯成功的單詞。                                                                                                  |
+
+## Dataset
+
+ASPEC (Asian Scientific Paper Excerpt Corpus)，由 [Japan Science and Technology Agency（JST）](https://www.jst.go.jp/)與 [National Institute of Information and Communications Technology（NICT）](http://www.nict.go.jp/)合作構建。ASPEC 由一個 3M 個平行句子的日英論文摘要語料庫（ASPEC-JE）和一個680K個平行句子的日中論文摘錄語料庫（ASPEC-JC）組成。該語料庫是2006年至2010年在日本進行的中日機器翻譯項目的成果之一。
+
+ASPEC-JC是由**人工**將日本的科學論文翻譯成中文而構建的。這些論文來自 Japan Science and Technology Agency（JST）或[日本最大的學術團體電子期刊平台（J-STAGE）](https://www.jstage.jst.go.jp/browse/)。每句翻譯的最小單位是文字段落（paragraphs），選擇以最大限度地覆蓋所有詞類為主。
+
+| Parallel Corpus | Data Type | File Name   | Number of sentences |
+| --------------- | --------- | ----------- | ------------------- |
+| ASPEC-JC        | TRAIN     | train.txt   | 672,315             |
+|                 | DEV       | dev.txt     | 2,090               |
+|                 | DEVTEST   | devtest.txt | 2,148               |
+|                 | TEST      | test.txt    | 2,107               |
+
+資料集需要至 [ASPEC](https://jipsti.jst.go.jp/aspec/) 填寫表格申請使用。
+
+## RoadMap
+
+https://whimsical.com/paper-7DLBJCEuDwpZd5Zvn8CpRq
+
+## Method
+
+### Tokenization
+
+1. Normalizer
+   1. NFKC
+2. Pre-tokenizer
+   1. Metaspace
+3. Model
+   1. SentencePiece (BPE + unigram)
+   2. Jieba (Chinese)
+   3. Janome (Japanese)
+4. Post-processor
+   1. `[BOS]`, `[EOS]`, `[PAD]`, `[UNK]`
+5. Decoder
+   1. Metaspace
+
+### Model
+
+#### RNN Seq2Seq
+1. Encoder
+   1. `nn.Embedding`
+   2. `nn.GRU`
+      1. bidirectional
+      2. batch_first
+   3. padding
+      1. `rnn.pack_padded_sequence`
+      2. `rnn.pad_packed_sequence`
+2. Attention
+   1. `nn.Linear` * 2
+   2. masking
+3. Decoder
+   1. `nn.Embedding`
+   2. `nn.GRU`
+      1. one-directional
+      2. batch_first
+   3. attention weighted sum
+
+#### Transformers
+
+TBD
+
+### Embedding
+
+1. Semantic
+2. Phonetic
+   1. Bopomofo
+   2. Pinyin
+   3. Hiragana
+3. Mixed
+4. Unsupervised Relation Binding
+
+### Metric
+
+1. Perplexity
+2. BLEU
+
+### Future
+
+1. Quality Estimation
+2. Corpus Filtering
+3. Back-Translation
+
+## Program
+
+### Data Preprocess and Tokenization
+
+- [data_preprocess.ipynb](experiments/main/data_preprocess.ipynb)
+- [rnn_attention_baseline.ipynb](experiments/main/rnn_attention_baseline.ipynb)
+
+## Experiment
+
+- [WandB](https://wandb.ai/windsuzu/phonetic-translation)
+
+## Backup
+
+### NMT Background
 
 | **Topic**                                                       | **Content**                                                                                                                                                                                                                                                                                              |
 | --------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -20,29 +163,7 @@
 | [Extended Context](methods/14.%20extended-context/README.md)    | 基於一般 NMT 架構，加入其他系統來和 NMT 合併，例如：<br/><ul><li>Multimodal NMT</li><li>Tree-based NMT</li><li>Graph-Structured Input NMT</li><li>Document-level Translation</li></ul>                                                                                                                   |
 | [NMT-SMT Hybird System](methods/15.%20nmt-smt-hybrid/README.md) | 利用 SMT 依然優於 NMT 的部分，來和 NMT 結合互補。結合方法有：<br/><ul><li>SMT-supported NMT</li><li>System Combination</li><li>Others</li></ul>                                                                                                                                                          |
 
-## Approaches
-
-| **Approaches**                                                                                                                                                                    | **Description**                                                                                                                                                                                                                                                                                                                                                                                                                             |
-| --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [Chinese–Japanese Unsupervised Neural Machine Translation Using Sub-character Level Information Unsupervised neural machine translation](approaches/unsupervised_subcharacter.md) | 作者將 UNMT 運用於中日文這類 `logographic languages`，特別是將中日文切成更小的 `sub-character-level` 來實作。裡面運用到的最新方法為：<br/><ul><li>Shared BPE Embeddings</li><li>Encoder–Decoder Language Models</li><li>Back-Translation</li></ul>結果展示了 `sub-character` 和 `high token sharing rate` 的重要性，也點出了 quality metrics 的不足。                                                                                       |
-| [Improving Character-level Japanese-Chinese Neural Machine Translation with Radicals as an Additional Input Feature](approaches/radical_feature.md)                               | 作者嘗試在 character-level NMT 加入額外特徵－部首 (radical)。因為中文屬於 `logograms`，無法拆成 `subword-level`，所以作者基於 `character-level` 找到了部首當作特徵。<br/>結果展示了部首當作特徵能提升效能，甚至翻譯出 reference 沒有翻譯成功的單詞。                                                                                                                                                                                        |
-| [LIT Team’s System Description for Japanese-Chinese Machine](approaches/data_preprocessing.md)                                                                                    | IWSLT 2020 open domain translation task 的回饋，該 task 強調 **open domain** 的翻譯，並且給予大量含雜訊資料集，而作者使用了以下方法處理資料集：<br/><ul><li>Parallel Data Filter</li><li>Web Crawled Sentence Alignment</li><li>Back-translation</li></ul>並且對 baseline 模型進行了以下加強：<br><ul><li>Bigger Transformer</li><li>Relative Position Representation</li></ul>實驗結果每個方法都起到了幫助。                               |
-| [Octanove Labs’ Japanese-Chinese Open Domain Translation System](approaches/octanove.md)                                                                                          | 同上為 IWSLT 2020 open domain translation task 的回饋，作者利用以下方法處理資料集：<br/><ul><li>Parallel Corpus Filtering</li><li>Back-Translation</li></ul>而模型做了以下處理：<br/><ul><li>Random parameter search</li><li>ensembling</li></ul>作者先對資料進行分析，並自訂 `rules` 和 `classifiers` 來去除不必要資料，且隨著 `back-translation` 使用率提高，獲得更好成積。<br/>另外也提出了 `top-k sampling` 與 `external data` 的幫助。 |
-| CASIA’s System for IWSLT 2020 Open Domain Translation                                                                                                                             | <ul><li>[Video](https://slideslive.com/38929589/casias-system-for-iwslt-2020-open-domain-translation)</li><li>[PDF](https://www.aclweb.org/anthology/2020.iwslt-1.15/)                                                                                                                                                                                                                                                                      |
-
-
-## Motivation
-
-NMT 透過 attention, transformer 效能提升，再加上 back-translation, corpus filtering 技術進一步提升，還有什麼方法可以進一步提升。
-
-受到兩篇論文的啟發:
-
-1. Diversity by Phonetics and its Application in Neural Machine Translation
-2. Robust Neural Machine Translation with Joint Textual and Phonetic Embedding
-
-使用讀音資訊作為新的特徵。
-
-## Datasets
+### NMT Datasets
 
 | Provenance                                                                                                                           | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                | Link                                                                                                                                                                                                               | Date |
 | ------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---- |
@@ -53,38 +174,16 @@ NMT 透過 attention, transformer 效能提升，再加上 back-translation, cor
 | Constructing a Chinese—Japanese Parallel Corpus from Wikipedia                                                                       | 從維基百科自動擷取的中日平行資料，包含:<ul><li>126,811 parallel sentences</li><li>131,509 parallel fragments</li><li>198 dev</li><li>198 test</li></ul>                                                                                                                                                                                                                                                                                                                                                                                                    | <ul><li>[PDF](https://www.aclweb.org/anthology/L14-1209/)</li><li>[Dataset](http://nlp.ist.i.kyoto-u.ac.jp/EN/index.php?Wikipedia%20Chinese-Japanese%20Parallel%20Corpus)</li></ul>                                | 2015 |
 | JEC Basic Sentence Data                                                                                                              | Excel file containing all the sentences in Japanese, English and Chinese, it contains: 5304 sentences                                                                                                                                                                                                                                                                                                                                                                                                                                                      | [Dataset](http://nlp.ist.i.kyoto-u.ac.jp/EN/index.php?JEC%20Basic%20Sentence%20Data)                                                                                                                               | 2011 |
 
-## Method
 
-1. Feature Extraction
-   1. Bopomofo
-   2. Hiragana
-2. Data Preprocessing
-   1. Escape character transformation
-   2. Numbers and punctuation normalization
-   3. Segmentation
-      1. Jieba (Chinese) 
-      2. Mecab (Japanese)
-   4. BPE for subword tokenization
-3. Embedding
-   1. Semantic
-   2. Phonetic
-   3. Mixed
-   4. Unsupervised Relation Binding
-4. Transformer, ConvS2S
-5. Metrics
-   1. BLEU
-   2. Quality Estimation
-6. Data Augmentation
-   1. Corpus Filtering
-   2. Back-Translation
+### NMT Contemporary Approaches
 
-## Experiments
+| **Approaches**                                                                                 | **Description**                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| ---------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [LIT Team’s System Description for Japanese-Chinese Machine](approaches/data_preprocessing.md) | IWSLT 2020 open domain translation task 的回饋，該 task 強調 **open domain** 的翻譯，並且給予大量含雜訊資料集，而作者使用了以下方法處理資料集：<br/><ul><li>Parallel Data Filter</li><li>Web Crawled Sentence Alignment</li><li>Back-translation</li></ul>並且對 baseline 模型進行了以下加強：<br><ul><li>Bigger Transformer</li><li>Relative Position Representation</li></ul>實驗結果每個方法都起到了幫助。                               |
+| [Octanove Labs’ Japanese-Chinese Open Domain Translation System](approaches/octanove.md)       | 同上為 IWSLT 2020 open domain translation task 的回饋，作者利用以下方法處理資料集：<br/><ul><li>Parallel Corpus Filtering</li><li>Back-Translation</li></ul>而模型做了以下處理：<br/><ul><li>Random parameter search</li><li>ensembling</li></ul>作者先對資料進行分析，並自訂 `rules` 和 `classifiers` 來去除不必要資料，且隨著 `back-translation` 使用率提高，獲得更好成積。<br/>另外也提出了 `top-k sampling` 與 `external data` 的幫助。 |
+| CASIA’s System for IWSLT 2020 Open Domain Translation                                          | <ul><li>[Video](https://slideslive.com/38929589/casias-system-for-iwslt-2020-open-domain-translation)</li><li>[PDF](https://www.aclweb.org/anthology/2020.iwslt-1.15/)                                                                                                                                                                                                                                                                      |
 
-
-## Results
-
-
-## Other Resources
+### NMT Resources
 
 
 | Field            | Description                                                                                                                                                                                                                                                                                                                                                                                                                  |
@@ -100,23 +199,3 @@ NMT 透過 attention, transformer 效能提升，再加上 back-translation, cor
 | CNN              | <ul><li>SOTA: [Machine Translation on WMT 2017 English-Chinese](https://paperswithcode.com/sota/machine-translation-on-wmt-2017-english-1)</li><li>Paper: [Pay Less Attention with Lightweight and Dynamic Convolutions](https://paperswithcode.com/paper/pay-less-attention-with-lightweight-and)</li><li>Notes: [Pay less attention with light-weight &dynamic CNN](https://zhuanlan.zhihu.com/p/60482693)</li></ul>       |
 | Score Metrics    | <ul><li>[Bleu: a Method for Automatic Evaluation of Machine Translation](https://www.aclweb.org/anthology/P02-1040/)</li><li>[A Call for Clarity in Reporting BLEU Scores](https://paperswithcode.com/paper/a-call-for-clarity-in-reporting-bleu-scores)</li><li>[Beyond BLEU: Training Neural Machine Translation with Semantic Similarity](https://paperswithcode.com/paper/beyond-bleu-training-neural-machine)</li></ul> |
 | WMT 20           | http://www.statmt.org/wmt20/index.html                                                                                                                                                                                                                                                                                                                                                                                       |
-
-
-
-## Idea
-
-| Field     | Description                                     |
-| --------- | ----------------------------------------------- |
-| Adversial | 或許能用一個文法 discriminator 來強化 generator |
-| Phonetic  | 利用語音作為新的特徵，同時和文字訓練            |
-
-## Progress
-
-- [x] Learning Training skills
-- [x] Implement a new tf transformer translation system
-- [ ] **Collect datasets**
-- [ ] Training with a transformer, ConvS2S library
-- [ ] Evaluation (BLEU, perplexity, other semantic metrics, blind testing...)
-- [ ] Update the system with some skills and features, new ideas
-- [ ] **Contribute a different evaluation method**
-- [ ] Identify the problem, find a solution, or leave a vision
