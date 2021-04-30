@@ -8,3 +8,5 @@ wandb/
 artifacts/
 checkpoints/
 logs/
+fast_align/
+fasttext/
