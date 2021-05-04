@@ -1,6 +1,7 @@
 .ipynb_checkpoints/
+fast_align/
+fasttext/
 *.swp
-
 data_module/
 tokenizer/
 dataset/
@@ -8,5 +9,5 @@ wandb/
 artifacts/
 checkpoints/
 logs/
-fast_align/
-fasttext/
+word2vec/
+tokenized_sentences/
