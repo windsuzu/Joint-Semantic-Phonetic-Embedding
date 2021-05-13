@@ -21,6 +21,11 @@
     * [Metric](#metric)
     * [Future](#future)
   * [Program](#program)
+    * [Data Preprocess](#data-preprocess)
+    * [Embedding](#embedding-1)
+    * [NMT (Ch2Jp)](#nmt-ch2jp)
+      * [RNN](#rnn)
+      * [Transformer](#transformer)
   * [Experiment](#experiment)
   * [Backup](#backup)
     * [NMT Background](#nmt-background)
@@ -32,7 +37,13 @@
 
 這幾年神經機器翻譯 (NMT) 透過 `attention`, `transformer` 讓效能快速提升，而現在的研究主要加上 `back-translation`, `corpus filtering` 等 generalized 的技術進一步提升。但在中文及日文的直接機器翻譯中，還是存在各種的翻譯錯誤，所以我想知道還有什麼方法可以特別針對中↔日翻譯進行改進，提升效能。
 
-而我受到兩篇論文的啟發:
+在中文及日文這類 logographic 語言中，現有的文獻多使用 sub-character feature 例如部首、筆畫來加強中日翻譯:
+
+1. Chinese–Japanese Unsupervised Neural Machine Translation Using Sub-character Level Information Unsupervised neural machine translation
+2. Improving Character-level Japanese-Chinese Neural Machine Translation with Radicals as an Additional Input Feature
+
+
+之後我受到兩篇論文的啟發:
 
 1. Diversity by Phonetics and its Application in Neural Machine Translation
 2. Robust Neural Machine Translation with Joint Textual and Phonetic Embedding
@@ -43,8 +54,8 @@
 
 | Paper                                                                                                                                                                             | Description                                                                                                                                                                                                                                                                                                                                           |
 | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Diversity by Phonetics and its Application in Neural Machine Translation                                                                                                          |                                                                                                                                                                                                                                                                                                                                                       |
-| Robust Neural Machine Translation with Joint Textual and Phonetic Embedding                                                                                                       |                                                                                                                                                                                                                                                                                                                                                       |
+| [Diversity by Phonetics and its Application in Neural Machine Translation](approaches/phonetics.md)                                                                               | 作者在西方語言及中文之間的翻譯中加入 phonetic 特徵，使用 `Soundex`, `NYSIIS`, `Metaphone` 來取出西方語言的 phonetic 特徵，使用 `pinyin` 取出中文特徵。利用 `distribution plotting`, `Quantitative verifications`, `Density Measure` 等來進一步確認 phonetic 特徵的實用性。                                                                                                                                                                                                                                                                                                       |
+| [Robust Neural Machine Translation with Joint Textual and Phonetic Embedding](approaches/homophone_noise.md)                                                                      | 作者直接點出一般翻譯系統錯字的問題，使用 phonetic 特徵來強化及平衡 semantic 特徵的缺失。分析在 joint mebedding 中不同 semantic-phonetic 特徵權重的差異 (beta) 分別影響翻譯系統多少。另外發現 phonetic 特徵中，中文的同音字會分布於類似的位置。                                                                                                                                                                                                                                                                                                                                                      |
 | [Chinese–Japanese Unsupervised Neural Machine Translation Using Sub-character Level Information Unsupervised neural machine translation](approaches/unsupervised_subcharacter.md) | 作者將 UNMT 運用於中日文這類 `logographic languages`，特別是將中日文切成更小的 `sub-character-level` 來實作。裡面運用到的最新方法為：<br/><ul><li>Shared BPE Embeddings</li><li>Encoder–Decoder Language Models</li><li>Back-Translation</li></ul>結果展示了 `sub-character` 和 `high token sharing rate` 的重要性，也點出了 quality metrics 的不足。 |
 | [Improving Character-level Japanese-Chinese Neural Machine Translation with Radicals as an Additional Input Feature](approaches/radical_feature.md)                               | 作者嘗試在 character-level NMT 加入額外特徵－部首 (radical)。因為中文屬於 `logograms`，無法拆成 `subword-level`，所以作者基於 `character-level` 找到了部首當作特徵。<br/>結果展示了部首當作特徵能提升效能，甚至翻譯出 reference 沒有翻譯成功的單詞。                                                                                                  |
 
@@ -107,17 +118,19 @@ https://whimsical.com/paper-7DLBJCEuDwpZd5Zvn8CpRq
 
 #### Transformers
 
-TBD
+1. Encoder
+2. Encoder Layer
+3. Multi-head Attention
+4. Decoder
+5. Decoder Layer
 
 ### Embedding
 
 1. Semantic
 2. Phonetic
-   1. Bopomofo
-   2. Pinyin
-   3. Hiragana
+   1. Zhuyin
+   2. Hiragana
 3. Mixed
-4. Unsupervised Relation Binding
 
 ### Metric
 
@@ -129,13 +142,29 @@ TBD
 1. Quality Estimation
 2. Corpus Filtering
 3. Back-Translation
+4. Unsupervised Relation Binding
 
 ## Program
 
-### Data Preprocess and Tokenization
+### Data Preprocess
 
 - [data_preprocess.ipynb](experiments/main/data_preprocess.ipynb)
-- [rnn_attention_baseline.ipynb](experiments/main/rnn_attention_baseline.ipynb)
+
+### Embedding
+
+- [extract_embedding](experiments/main/extract_embedding.ipynb)
+
+### NMT (Ch2Jp)
+
+#### RNN
+
+- [rnn_baseline.ipynb](experiments/main/ch2jp/rnn_baseline.ipynb)
+- [rnn_embedding.ipynb](experiments/main/ch2jp/rnn_embedding.ipynb)
+
+#### Transformer
+
+- [transformer_baseline.ipynb](experiments/main/ch2jp/transformer_baseline.ipynb)
+- [transformer_embedding.ipynb](experiments/main/ch2jp/transformer_embedding.ipynb)
 
 ## Experiment
 
